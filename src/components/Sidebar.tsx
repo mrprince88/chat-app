@@ -7,7 +7,12 @@ const Sidebar = ({
   setSelectedUser,
 }: {
   selectedUser: { id: string; username: string } | null;
-  setSelectedUser: (user: { id: string; username: string }) => void;
+  setSelectedUser: (user: {
+    id: string;
+    username: string;
+    name: string;
+    image: string;
+  }) => void;
 }) => {
   return (
     <div className="bg-blue3 w-1/4 overflow-auto no-scrollbar">
@@ -25,14 +30,16 @@ const Sidebar = ({
               setSelectedUser({
                 id: user.id,
                 username: user.username,
+                name: user.name,
+                image: user.image,
               })
             }
             role="button"
           >
             <img
-              src={`https://avatars.dicebear.com/api/human/${user.id}.svg`}
+              src={user.image}
               alt={user.name}
-              className="w-8 h-8 rounded-full"
+              className="w-12 h-12 rounded-full"
             />
             <p>{user.name}</p>
           </div>

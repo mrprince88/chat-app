@@ -7,7 +7,12 @@ import useAuth from "src/context/useAuth";
 const Chat = ({
   selectedUser,
 }: {
-  selectedUser: { id: string; username: string } | null;
+  selectedUser: {
+    id: string;
+    username: string;
+    name: string;
+    image: string;
+  } | null;
 }) => {
   const message = useChatStore((state) => state.messages);
   const addMessage = useChatStore((state) => state.addMessage);
@@ -39,8 +44,13 @@ const Chat = ({
 
   return (
     <div className="flex-1 bg-blue2 rounded-r-lg overflow-auto relative">
-      <div className="flex items-center justify-between p-4 border-b border-blue4 sticky top-0 w-full bg-blue2">
-        <div className="flex items-center">{selectedUser?.username}</div>
+      <div className="flex items-center gap-4 p-4 border-b border-blue4 sticky top-0 w-full bg-blue2">
+        <img
+          src={selectedUser?.image}
+          alt={selectedUser?.name}
+          className="w-10 h-10 rounded-full"
+        />
+        <div className="flex items-center">{selectedUser?.name}</div>
       </div>
       <div className="flex-1 p-4 gap-4 flex h-full flex-col justify-end">
         {messages.map((message) => (

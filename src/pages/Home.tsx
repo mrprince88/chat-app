@@ -7,6 +7,8 @@ const Home = () => {
   const [selectedUser, setSelectedUser] = useState<{
     id: string;
     username: string;
+    name: string;
+    image: string;
   } | null>(null);
 
   return (
