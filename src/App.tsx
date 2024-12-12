@@ -4,6 +4,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import AuthProvider from "src/context/AuthProvider";
+import Authenticated from "src/components/Authenticated";
 import Login from "src/pages/Login";
 import Home from "src/pages/Home";
 
@@ -14,7 +15,14 @@ const App = () => {
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<Login />} />
-            <Route path="/" element={<Home />} />
+            <Route
+              path="/"
+              element={
+                <Authenticated>
+                  <Home />
+                </Authenticated>
+              }
+            />
           </Routes>
         </BrowserRouter>
       </AuthProvider>

@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import cn from "classnames";
 
 import { useChatStore } from "src/store/chat";
@@ -20,7 +20,9 @@ const Chat = ({
   const ref = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
-  console.log("message", message);
+  useEffect(() => {
+    scrollToBottom();
+  }, [selectedUser, message]);
 
   const scrollToBottom = () => {
     ref.current?.scrollIntoView({ behavior: "smooth" });
@@ -75,7 +77,6 @@ const Chat = ({
           e.preventDefault();
           const value = e.currentTarget.message.value;
           addMessage(value, user?.id || "", selectedUser.id);
-          scrollToBottom();
         }}
       >
         <input
