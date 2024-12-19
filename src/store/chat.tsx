@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
-type Message = {
+export type Message = {
   message: string;
   sender: string;
   receiver: string;

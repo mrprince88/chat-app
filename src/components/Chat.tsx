@@ -47,7 +47,9 @@ const Chat = ({
   }, [selectedUser, user]);
 
   const scrollToBottom = () => {
-    ref.current?.scrollIntoView({ behavior: "smooth" });
+    setTimeout(() => {
+      ref.current?.scrollIntoView({ behavior: "smooth" });
+    }, 100);
 
     formRef.current?.reset();
   };
@@ -78,7 +80,7 @@ const Chat = ({
               message.sender === user?.id
                 ? "bg-blue4 text-white rounded-lg ml-auto"
                 : "bg-white text-black rounded-lg",
-              "p-2 w-fit"
+              "p-2 w-fit break-all"
             )}
           >
             {message.message}
