@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { subscribeWithSelector } from "zustand/middleware";
 
 type Message = {
   message: string;
@@ -12,19 +13,21 @@ interface ChatState {
   addMessage: (message: string, sender: string, receiver: string) => void;
 }
 
-export const useChatStore = create<ChatState>((set) => ({
-  messages: [],
-  addMessage: (message, sender, receiver) => {
-    set((state) => ({
-      messages: [
-        ...state.messages,
-        {
-          message,
-          sender,
-          receiver,
-          createdAt: new Date(),
-        },
-      ],
-    }));
-  },
-}));
+export const useChatStore = create<ChatState>()(
+  subscribeWithSelector((set) => ({
+    messages: [],
+    addMessage: (message, sender, receiver) => {
+      set((state) => ({
+        messages: [
+          ...state.messages,
+          {
+            message,
+            sender,
+            receiver,
+            createdAt: new Date(),
+          },
+        ],
+      }));
+    },
+  }))
+);
