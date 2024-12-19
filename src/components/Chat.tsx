@@ -1,8 +1,9 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import cn from "classnames";
 
-import { useChatStore } from "src/store/chat";
+import { useChatStore, Message as MessageType } from "src/store/chat";
 import useAuth from "src/context/useAuth";
+import { shallow } from "zustand/shallow";
 
 const Chat = ({
   selectedUser,
@@ -14,7 +15,7 @@ const Chat = ({
     image: string;
   } | null;
 }) => {
-  const message = useChatStore((state) => state.messages);
+  const [chatMessages, setChatMessages] = useState<MessageType[]>([]);
   const addMessage = useChatStore((state) => state.addMessage);
   const { user } = useAuth();
   const ref = useRef<HTMLDivElement>(null);
@@ -22,19 +23,34 @@ const Chat = ({
 
   useEffect(() => {
     scrollToBottom();
-  }, [selectedUser, message]);
+
+    const unsubscribe = useChatStore.subscribe(
+      (state) => state.messages,
+      (messagesData) => {
+        setChatMessages(() =>
+          messagesData.filter(
+            (message) =>
+              (message.sender === user?.id &&
+                message.receiver === selectedUser?.id) ||
+              (message.sender === selectedUser?.id &&
+                message.receiver === user?.id)
+          )
+        );
+      },
+      {
+        equalityFn: shallow,
+        fireImmediately: true,
+      }
+    );
+
+    return unsubscribe;
+  }, [selectedUser, user]);
 
   const scrollToBottom = () => {
     ref.current?.scrollIntoView({ behavior: "smooth" });
 
     formRef.current?.reset();
   };
-
-  const messages = message.filter(
-    (message) =>
-      (message.sender === user?.id && message.receiver === selectedUser?.id) ||
-      (message.sender === selectedUser?.id && message.receiver === user?.id)
-  );
 
   if (!selectedUser?.id) {
     return (
@@ -45,7 +61,7 @@ const Chat = ({
   }
 
   return (
-    <div className="flex-1 bg-blue2 rounded-r-lg overflow-auto relative">
+    <div className="flex-1 bg-blue2 rounded-r-lg relative overflow-auto">
       <div className="flex items-center gap-4 p-4 border-b border-blue4 sticky top-0 w-full bg-blue2">
         <img
           src={selectedUser?.image}
@@ -54,8 +70,8 @@ const Chat = ({
         />
         <div className="flex items-center">{selectedUser?.name}</div>
       </div>
-      <div className="flex-1 p-4 gap-4 flex h-full flex-col justify-end">
-        {messages.map((message) => (
+      <div className="flex-1 p-4 gap-4 flex h-full flex-col justify-end overflow-auto">
+        {chatMessages.map((message) => (
           <div
             key={String(message.createdAt)}
             className={cn(
@@ -68,15 +84,17 @@ const Chat = ({
             {message.message}
           </div>
         ))}
+        <div ref={ref} />
       </div>
-      <div ref={ref} />
       <form
         ref={formRef}
         className="flex gap-4 p-4 sticky bottom-0 bg-blue2"
         onSubmit={(e) => {
           e.preventDefault();
           const value = e.currentTarget.message.value;
+          if (!value) return;
           addMessage(value, user?.id || "", selectedUser.id);
+          scrollToBottom();
         }}
       >
         <input
